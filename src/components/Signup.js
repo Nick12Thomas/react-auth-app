@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
 
 function Signup() {
-  // State to handle form inputs
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +11,7 @@ function Signup() {
   const [inviteCode, setInviteCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Handle form submit
+ 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -35,13 +35,11 @@ function Signup() {
         inviteCode
       };
 
-      // Ensure the correct URL (baseUrl + /api/auth/signup) is used
+      
       const response = await axios.post("/api/auth/signup", formData); // Using proxy configured in package.json
       console.log("Signup successful:", response.data);
 
-      // Handle successful signup (e.g., redirect to login page)
-      // Redirecting to login (Optional)
-      // window.location.href = '/login';
+   
       
     } catch (error) {
       console.error("Error during signup:", error);

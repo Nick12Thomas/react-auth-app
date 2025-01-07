@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// Intercept requests to add additional headers if needed (e.g., Authorization tokens)
+
 api.interceptors.request.use(
   (config) => {
     // Example: Attach a token if available
@@ -28,7 +28,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercept responses to handle errors globally
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
