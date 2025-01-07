@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import "./Signup.css"; // Create a CSS file for Signup if needed
+import api from "../api/api"; // Axios instance
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Grid,
+} from "@mui/material";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -10,101 +18,121 @@ const Signup = () => {
     inviteCode: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password) newErrors.password = "Password is required";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Passwords must match";
-    return newErrors;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
-    // Mock API logic here
-    alert("Signup Successful!");
+
+    try {
+      const response = await api.post("/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        inviteCode: formData.inviteCode,
+      });
+
+      setMessage("Signup successful! Please log in.");
+      setError("");
+    } catch (err) {
+      setError(err.message || "An error occurred during signup.");
+    }
   };
 
   return (
-    <div className="signup-container">
-      <h2 className="signup-title">Signup</h2>
-      {apiError && <p className="error-message">{apiError}</p>}
-      <form onSubmit={handleSubmit} className="signup-form">
-        <div className="form-group">
-          <label htmlFor="name" className="form-label">Name:</label>
-          <input
-            type="text"
-            name="name"
-            id="name"
-            value={formData.name}
-            onChange={handleChange}
-            className={`form-input ${errors.name ? "error" : ""}`}
-          />
-          {errors.name && <p className="error-message">{errors.name}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">Email:</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`form-input ${errors.email ? "error" : ""}`}
-          />
-          {errors.email && <p className="error-message">{errors.email}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="password" className="form-label">Password:</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`form-input ${errors.password ? "error" : ""}`}
-          />
-          {errors.password && <p className="error-message">{errors.password}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="confirmPassword" className="form-label">Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            id="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={`form-input ${errors.confirmPassword ? "error" : ""}`}
-          />
-          {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="inviteCode" className="form-label">Invite Code:</label>
-          <input
-            type="text"
-            name="inviteCode"
-            id="inviteCode"
-            value={formData.inviteCode}
-            onChange={handleChange}
-            className="form-input"
-          />
-        </div>
-        <button type="submit" className="signup-button">Sign Up</button>
-      </form>
-    </div>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 4,
+          p: 3,
+          boxShadow: 3,
+          borderRadius: 2,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Signup
+        </Typography>
+        {message && <Typography color="success.main">{message}</Typography>}
+        {error && <Typography color="error.main">{error}</Typography>}
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Confirm Password"
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Invite Code"
+                name="inviteCode"
+                value={formData.inviteCode}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{ mt: 2 }}
+              >
+                Sign Up
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Box>
+    </Container>
   );
 };
 
