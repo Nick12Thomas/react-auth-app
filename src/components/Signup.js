@@ -3,7 +3,6 @@ import axios from "axios";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
 
 function Signup() {
-  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,11 +10,9 @@ function Signup() {
   const [inviteCode, setInviteCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
- 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Basic form validation
     if (!name || !email || !password || !confirmPassword || !inviteCode) {
       setErrorMessage("All fields are required");
       return;
@@ -27,7 +24,6 @@ function Signup() {
     }
 
     try {
-      // API call to the signup endpoint
       const formData = {
         name,
         email,
@@ -35,12 +31,17 @@ function Signup() {
         inviteCode
       };
 
-      
-      const response = await axios.post("/api/auth/signup", formData); // Using proxy configured in package.json
-      console.log("Signup successful:", response.data);
+      // API call to the signup endpoint
+      const response = await axios.post("https://bffapi.biztel.ai:8080/api/auth/signup", formData);
 
-   
-      
+      // Assuming the backend sends the JWT token in response
+      const token = response.data.token;
+      localStorage.setItem("token", token); // Store JWT token in localStorage
+
+      console.log("Signup successful");
+
+      // Redirect to login or dashboard (optional)
+      // window.location.href = '/login';
     } catch (error) {
       console.error("Error during signup:", error);
       setErrorMessage(error.response ? error.response.data.message : "Something went wrong");

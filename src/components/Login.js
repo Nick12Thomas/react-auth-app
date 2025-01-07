@@ -1,99 +1,79 @@
 import React, { useState } from "react";
-import api from "../api/api"; // Axios instance
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Container,
-  Grid,
-} from "@mui/material";
+import axios from "axios";
+import { Button, TextField, Container, Typography, Box } from "@mui/material";
 
-const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (!email || !password) {
+      setErrorMessage("Email and Password are required");
+      return;
+    }
 
     try {
-      const response = await api.post("/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const formData = { email, password };
 
-      const { token } = response.data;
+      // API call to the login endpoint
+      const response = await axios.post("https://bffapi.biztel.ai:8080/api/auth/login", formData);
 
-      document.cookie = `token=${token}; HttpOnly; Secure; SameSite=Strict; path=/`;
+      // Assuming the backend sends the JWT token in response
+      const token = response.data.token; // or response.data.accessToken
+      localStorage.setItem("token", token); // Store JWT token in localStorage
 
-      setMessage("Login successful!");
-      setError("");
-    } catch (err) {
-      setError(err.message || "Invalid login credentials.");
+      console.log("Login successful");
+
+      // Redirect to dashboard or home page (optional)
+      // window.location.href = '/dashboard';
+      
+    } catch (error) {
+      console.error("Error during login:", error);
+      setErrorMessage(error.response ? error.response.data.message : "Invalid credentials");
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 4,
-          p: 3,
-          boxShadow: 3,
-          borderRadius: 2,
-          bgcolor: "background.paper",
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Login
-        </Typography>
-        {message && <Typography color="success.main">{message}</Typography>}
-        {error && <Typography color="error.main">{error}</Typography>}
+    <Container>
+      <Box sx={{ maxWidth: 400, margin: "auto", paddingTop: 4 }}>
+        <Typography variant="h4" align="center">Login</Typography>
+        {errorMessage && (
+          <Typography color="error" variant="body2" align="center">{errorMessage}</Typography>
+        )}
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Password"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{ mt: 2 }}
-              >
-                Log In
-              </Button>
-            </Grid>
-          </Grid>
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            label="Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2 }}
+          >
+            Login
+          </Button>
         </form>
       </Box>
     </Container>
   );
-};
+}
 
 export default Login;
