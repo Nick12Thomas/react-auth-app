@@ -1,5 +1,3 @@
-Here’s a sample README.md file for your React authentication app with signup, login, and security best practices.
-
 React Authentication App
 
 A simple React application that allows users to sign up, log in, and securely interact with an API for authentication. This app integrates best practices for handling sensitive information, such as passwords, and uses secure HTTP methods for communication with the API.
@@ -28,7 +26,7 @@ Before getting started, ensure you have the following installed:
 Setup and Installation
 	1.	Clone the repository:
 
-git clone https://github.com/yourusername/react-auth-app.git
+git clone https://github.com/Nick12Thomas/react-auth-app.git
 
 
 	2.	Navigate to the project directory:
@@ -101,5 +99,5 @@ Security Best Practices
 	5.	Content-Security-Policy (CSP): Restrict where resources can be loaded from to prevent malicious code execution.
 
 Known Issues
-	•	None currently. If you encounter any issues, please open an issue on the GitHub repository.
+	•	Since this is only the frontend part , we have to use proxy or create a dummy node(server side) to check and get the desired output from the client side pages.
 
