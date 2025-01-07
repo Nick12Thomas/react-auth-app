@@ -1,139 +1,117 @@
 import React, { useState } from "react";
-import api from "../api/api"; // Axios instance
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Container,
-  Grid,
-} from "@mui/material";
+import axios from "axios";
+import { Button, TextField, Container, Typography, Box } from "@mui/material";
 
-const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    inviteCode: "",
-  });
+function Signup() {
+  // State to handle form inputs
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  // Handle form submit
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    // Basic form validation
+    if (!name || !email || !password || !confirmPassword || !inviteCode) {
+      setErrorMessage("All fields are required");
+      return;
+    }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
       return;
     }
 
     try {
-      const response = await api.post("/signup", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        inviteCode: formData.inviteCode,
-      });
+      // API call to the signup endpoint
+      const formData = {
+        name,
+        email,
+        password,
+        inviteCode
+      };
 
-      setMessage("Signup successful! Please log in.");
-      setError("");
-    } catch (err) {
-      setError(err.message || "An error occurred during signup.");
+      // Ensure the correct URL (baseUrl + /api/auth/signup) is used
+      const response = await axios.post("/api/auth/signup", formData); // Using proxy configured in package.json
+      console.log("Signup successful:", response.data);
+
+      // Handle successful signup (e.g., redirect to login page)
+      // Redirecting to login (Optional)
+      // window.location.href = '/login';
+      
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setErrorMessage(error.response ? error.response.data.message : "Something went wrong");
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 4,
-          p: 3,
-          boxShadow: 3,
-          borderRadius: 2,
-          bgcolor: "background.paper",
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Signup
-        </Typography>
-        {message && <Typography color="success.main">{message}</Typography>}
-        {error && <Typography color="error.main">{error}</Typography>}
+    <Container>
+      <Box sx={{ maxWidth: 400, margin: "auto", paddingTop: 4 }}>
+        <Typography variant="h4" align="center">Sign Up</Typography>
+        {errorMessage && (
+          <Typography color="error" variant="body2" align="center">{errorMessage}</Typography>
+        )}
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Password"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Confirm Password"
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Invite Code"
-                name="inviteCode"
-                value={formData.inviteCode}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{ mt: 2 }}
-              >
-                Sign Up
-              </Button>
-            </Grid>
-          </Grid>
+          <TextField
+            label="Name"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            label="Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            label="Confirm Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <TextField
+            label="Invite Code"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2 }}
+          >
+            Sign Up
+          </Button>
         </form>
       </Box>
     </Container>
   );
-};
+}
 
 export default Signup;
